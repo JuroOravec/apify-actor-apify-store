@@ -1,0 +1,299 @@
+{
+  "actorSpecification": 1,
+  "name": "apify-store-scraper",
+  "title": "Apify Store Scraper",
+  "description": "Extract all Actors from the Apify Store. Includes cost, trial minutes, number of users, number of builds, version, author, and more",
+  "version": "1.0",
+  "dockerfile": "./Dockerfile",
+  "input": {
+    "schemaVersion": 1,
+    "title": "Apify Store Scraper",
+    "description": "Configure the Apify Store Scraper.",
+    "type": "object",
+    "properties": {
+      "startUrls": {
+        "title": "Start URLs",
+        "type": "array",
+        "description": "Select specific URLs to scrape.",
+        "example": [
+          {
+            "url": "https://apify.com/store"
+          }
+        ],
+        "prefill": [
+          {
+            "url": "https://apify.com/store"
+          }
+        ],
+        "default": [
+          {
+            "url": "https://apify.com/store"
+          }
+        ],
+        "editor": "requestListSources"
+      },
+      "listingFilterQuery": {
+        "type": "string",
+        "title": "Search query",
+        "description": "If given, only actors matching the query will be retrieved",
+        "example": "facebook",
+        "editor": "textfield"
+      },
+      "listingFilterCategory": {
+        "type": "string",
+        "title": "Actor category",
+        "description": "If given, only actors from this category will be retried",
+        "example": "lead generation",
+        "editor": "select",
+        "enum": [
+          "ai",
+          "automation",
+          "business",
+          "covid-19",
+          "developer examples",
+          "developer tools",
+          "e-commerce",
+          "games",
+          "jobs",
+          "lead generation",
+          "marketing",
+          "news",
+          "seo tools",
+          "social media",
+          "travel",
+          "videos",
+          "real estate",
+          "sports",
+          "education",
+          "other"
+        ],
+        "enumTitles": [
+          "Ai",
+          "Automation",
+          "Business",
+          "Covid-19",
+          "Developer examples",
+          "Developer tools",
+          "E-commerce",
+          "Games",
+          "Jobs",
+          "Lead generation",
+          "Marketing",
+          "News",
+          "Seo tools",
+          "Social media",
+          "Travel",
+          "Videos",
+          "Real estate",
+          "Sports",
+          "Education",
+          "Other"
+        ],
+        "nullable": true
+      },
+      "listingFilterMaxCount": {
+        "title": "Target number of results",
+        "type": "integer",
+        "description": "If set, only up to this number of entries will be extracted.\n        The actual number of entries might be higher than this because\n        the results are paginated.",
+        "default": 100,
+        "prefill": 100,
+        "example": 100,
+        "minimum": 1,
+        "nullable": true
+      },
+      "proxy": {
+        "title": "Proxy configuration",
+        "type": "object",
+        "description": "Select proxies to be used by your crawler.",
+        "editor": "proxy",
+        "sectionCaption": "Proxy",
+        "sectionDescription": "Configure the proxy"
+      },
+      "includePersonalData": {
+        "title": "Include personal data",
+        "type": "boolean",
+        "description": "By default, fields that are potential personal data are censored. Toggle this option on to get the un-uncensored values.<br/><br/><strong>WARNING:</strong> Turn this on ONLY if you have consent, legal basis for using the data, or at your own risk. <a href=\"https://gdpr.eu/eu-gdpr-personal-data/\">Learn more</a>",
+        "default": false,
+        "example": false,
+        "nullable": true,
+        "sectionCaption": "Privacy & Data governance (GDPR)"
+      },
+      "maxRequestRetries": {
+        "title": "maxRequestRetries",
+        "type": "integer",
+        "description": "Indicates how many times the request is retried if <a href=\"https://crawlee.dev/api/basic-crawler/interface/BasicCrawlerOptions#requestHandler\">BasicCrawlerOptions.requestHandler</a> fails.",
+        "example": 3,
+        "prefill": 3,
+        "minimum": 0,
+        "nullable": true,
+        "sectionCaption": "Crawler configuration (Advanced)",
+        "sectionDescription": "These options are applied directly to the Crawler. In majority of cases you don't need to change these. See https://crawlee.dev/api/basic-crawler/interface/BasicCrawlerOptions"
+      },
+      "maxRequestsPerMinute": {
+        "title": "maxRequestsPerMinute",
+        "type": "integer",
+        "description": "The maximum number of requests per minute the crawler should run. We can pass any positive, non-zero integer.",
+        "example": 120,
+        "prefill": 120,
+        "minimum": 1,
+        "nullable": true
+      },
+      "maxRequestsPerCrawl": {
+        "title": "maxRequestsPerCrawl",
+        "type": "integer",
+        "description": "Maximum number of pages that the crawler will open. The crawl will stop when this limit is reached. <br/><br/> <strong>NOTE:</strong> In cases of parallel crawling, the actual number of pages visited might be slightly higher than this value.",
+        "minimum": 1,
+        "nullable": true
+      },
+      "minConcurrency": {
+        "title": "minConcurrency",
+        "type": "integer",
+        "description": "Sets the minimum concurrency (parallelism) for the crawl.<br/><br/><strong>WARNING:</strong> If we set this value too high with respect to the available system memory and CPU, our crawler will run extremely slow or crash. If not sure, it's better to keep the default value and the concurrency will scale up automatically.",
+        "example": 1,
+        "prefill": 1,
+        "minimum": 1,
+        "nullable": true
+      },
+      "maxConcurrency": {
+        "title": "maxConcurrency",
+        "type": "integer",
+        "description": "Sets the maximum concurrency (parallelism) for the crawl.",
+        "minimum": 1,
+        "nullable": true
+      },
+      "navigationTimeoutSecs": {
+        "title": "navigationTimeoutSecs",
+        "type": "integer",
+        "description": "Timeout in which the HTTP request to the resource needs to finish, given in seconds.",
+        "minimum": 0,
+        "nullable": true
+      },
+      "requestHandlerTimeoutSecs": {
+        "title": "requestHandlerTimeoutSecs",
+        "type": "integer",
+        "description": "Timeout in which the function passed as <a href=\"https://crawlee.dev/api/basic-crawler/interface/BasicCrawlerOptions#requestHandler\">BasicCrawlerOptions.requestHandler</a> needs to finish, in seconds.",
+        "example": 180,
+        "prefill": 180,
+        "minimum": 0,
+        "nullable": true
+      },
+      "keepAlive": {
+        "title": "keepAlive",
+        "type": "boolean",
+        "description": "Allows to keep the crawler alive even if the RequestQueue gets empty. With keepAlive: true the crawler will keep running, waiting for more requests to come.",
+        "nullable": true
+      },
+      "ignoreSslErrors": {
+        "title": "ignoreSslErrors",
+        "type": "boolean",
+        "description": "If set to true, SSL certificate errors will be ignored.",
+        "nullable": true
+      },
+      "additionalMimeTypes": {
+        "title": "additionalMimeTypes",
+        "type": "array",
+        "description": "An array of MIME types you want the crawler to load and process. By default, only text/html and application/xhtml+xml MIME types are supported.",
+        "editor": "stringList",
+        "uniqueItems": true,
+        "nullable": true
+      },
+      "suggestResponseEncoding": {
+        "title": "suggestResponseEncoding",
+        "type": "string",
+        "description": "By default this crawler will extract correct encoding from the HTTP response headers. There are some websites which use invalid headers. Those are encoded using the UTF-8 encoding. If those sites actually use a different encoding, the response will be corrupted. You can use suggestResponseEncoding to fall back to a certain encoding, if you know that your target website uses it. To force a certain encoding, disregarding the response headers, use forceResponseEncoding.",
+        "editor": "textfield",
+        "nullable": true
+      },
+      "forceResponseEncoding": {
+        "title": "forceResponseEncoding",
+        "type": "string",
+        "description": "By default this crawler will extract correct encoding from the HTTP response headers. Use forceResponseEncoding to force a certain encoding, disregarding the response headers. To only provide a default for missing encodings, use suggestResponseEncoding.",
+        "editor": "textfield",
+        "nullable": true
+      },
+      "logLevel": {
+        "title": "Log Level",
+        "type": "string",
+        "editor": "select",
+        "description": "Select how detailed should be the logging.",
+        "enum": [
+          "off",
+          "debug",
+          "info",
+          "warn",
+          "error"
+        ],
+        "enumTitles": [
+          "No logging (off)",
+          "Debug and higher priority",
+          "Info and higher priority",
+          "Warning and higher priority",
+          "Error and higher priority"
+        ],
+        "example": "info",
+        "prefill": "info",
+        "default": "info",
+        "nullable": true,
+        "sectionCaption": "Logging (Advanced)",
+        "sectionDescription": "Configure what should be displayed in the log console."
+      }
+    },
+    "required": [
+      "startUrls"
+    ]
+  },
+  "storages": {
+    "dataset": {
+      "actorSpecification": 1,
+      "fields": {},
+      "views": {
+        "overview": {
+          "title": "Overview",
+          "transformation": {
+            "fields": [
+              "pictureUrl",
+              "title",
+              "name",
+              "description",
+              "categories",
+              "notice",
+              "userPictureUrl",
+              "username",
+              "userFullName",
+              "stats.totalBuilds",
+              "stats.totalRuns",
+              "stats.totalUsers",
+              "stats.totalUsers7Days",
+              "stats.totalUsers30Days",
+              "stats.totalUsers90Days",
+              "stats.lastRunStartedAt",
+              "currentPricingInfo.pricingModel",
+              "currentPricingInfo.pricePerUnitUsd",
+              "currentPricingInfo.apifyMarginPercentage",
+              "currentPricingInfo.createdAt",
+              "currentPricingInfo.startedAt",
+              "currentPricingInfo.trialMinutes"
+            ],
+            "flatten": [
+              "stats",
+              "currentPricingInfo"
+            ]
+          },
+          "display": {
+            "component": "table",
+            "properties": {
+              "pictureUrl": {
+                "label": "Picture",
+                "format": "image"
+              },
+              "userPictureUrl": {
+                "label": "User picture",
+                "format": "image"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
