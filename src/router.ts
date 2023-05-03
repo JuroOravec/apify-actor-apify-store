@@ -4,6 +4,7 @@ import { RouteHandler, createPlaywrightRouteMatchers, pushData } from 'apify-act
 import { RouteLabel, ApifyActorStoreItem } from './types';
 import type { ActorInput } from './config';
 import { storePageActions, storePageMethods } from './pageActions/store';
+import { CATEGORIES } from './constants';
 
 export const routes = createPlaywrightRouteMatchers<PlaywrightCrawlingContext, RouteLabel>([
   {
@@ -17,7 +18,8 @@ export const routes = createPlaywrightRouteMatchers<PlaywrightCrawlingContext, R
 export const createHandlers = <Ctx extends PlaywrightCrawlingContext>(
   input: ActorInput
 ): Record<RouteLabel, RouteHandler<Ctx>> => {
-  const { query, category, includePersonalData } = input;
+  const { listingFilterQuery, listingFilterCategory, listingFilterMaxCount, includePersonalData } =
+    input;
 
   return {
     LISTING: async (ctx) => {
@@ -25,7 +27,7 @@ export const createHandlers = <Ctx extends PlaywrightCrawlingContext>(
 
       const categLocators = await storePageActions.getCategories({
         page,
-        categoriesByText: category ? [category] : undefined,
+        categoriesByText: listingFilterCategory ? [listingFilterCategory] : undefined,
         log,
       });
 
@@ -49,6 +51,7 @@ export const createHandlers = <Ctx extends PlaywrightCrawlingContext>(
           item.categories = [category];
         }
       };
+      let isDoneProcessing = false;
 
       // With given approach (intercepting requests) there can be a race condition between:
       // 1) The time we start "waiting for response" from the intercepted network request
@@ -79,10 +82,22 @@ export const createHandlers = <Ctx extends PlaywrightCrawlingContext>(
           await storePageActions.fetchStoreItems({
             fetchOptions: { url, headers },
             // Insert our custom query from actor input
-            payload: query ? { ...payload, query } : payload,
+            payload: listingFilterQuery ? { ...payload, query: listingFilterQuery } : payload,
             log,
-            onData: (data) => {
+            onData: async (data) => {
               data.hits?.forEach((d) => processItem(d, category!));
+
+              // Check if we should continue or quit
+              const didReachMaxCount =
+                typeof listingFilterMaxCount === 'number' &&
+                Object.values(allItemsById).length >= listingFilterMaxCount;
+
+              // If we do not continue, stop interception, and set all categories as done
+              if (didReachMaxCount) {
+                await disposeIntercept();
+                CATEGORIES.forEach((c) => setCategoryAsIntercepted(c.filter));
+                isDoneProcessing = true;
+              }
             },
           });
         },
@@ -121,6 +136,9 @@ export const createHandlers = <Ctx extends PlaywrightCrawlingContext>(
           waitForCategoryIntercepted({ text: categText! }),
         ]);
         log.info(`DONE Waiting for response for category "${categText}"`);
+
+        // Exit early if we've hit our max entries count
+        if (isDoneProcessing) break;
 
         await new Promise((res) => setTimeout(res, 500));
       }

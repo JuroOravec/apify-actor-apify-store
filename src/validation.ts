@@ -16,8 +16,9 @@ const inputValidationSchema = Joi.object<ActorInput>({
   ...privacyInputValidationFields,
 
   startUrls: Joi.array().optional(),
-  category: Joi.string().valid(...CATEGORY).optional(), // prettier-ignore
-  query: Joi.string().optional(),
+  listingFilterCategory: Joi.string().valid(...CATEGORY).optional(), // prettier-ignore
+  listingFilterQuery: Joi.string().optional(),
+  listingFilterMaxCount: Joi.number().integer().min(1).optional(),
 });
 
 export const validateInput = (input: ActorInput | null) => {

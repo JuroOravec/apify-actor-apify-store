@@ -7,6 +7,7 @@ import {
   Field,
   ActorInputSchema,
   createActorOutputSchema,
+  createIntegerField,
 } from 'apify-actor-config';
 import {
   CrawlerConfigActorInput,
@@ -20,16 +21,18 @@ import {
 } from 'apify-actor-utils';
 
 import { CATEGORIES } from './constants';
-import { Category } from './types';
+import type { Category } from './types';
 import actorSpec from './actorspec';
 
 export interface CustomActorInput {
   /** URLs to start with */
   startUrls?: string[];
   /** If given, only actors matching the query will be retrieved */
-  query?: string;
+  listingFilterQuery?: string;
   /** If given, only actors from this category will be retried */
-  category?: Category;
+  listingFilterCategory?: Category;
+  /** If set, only up to this number of entries will be extracted */
+  listingFilterMaxCount?: number;
 }
 
 /** Shape of the data passed to the actor from Apify */
@@ -51,14 +54,14 @@ const customActorInput: Record<keyof CustomActorInput, Field> = {
     default: [{ url: 'https://apify.com/store' }],
     editor: 'requestListSources',
   }),
-  query: createStringField({
+  listingFilterQuery: createStringField({
     type: 'string',
     title: 'Search query',
     description: 'If given, only actors matching the query will be retrieved',
     example: 'facebook',
     editor: 'textfield',
   }),
-  category: createStringField<Category>({
+  listingFilterCategory: createStringField<Category>({
     type: 'string',
     title: 'Actor category',
     description: 'If given, only actors from this category will be retried',
@@ -66,6 +69,18 @@ const customActorInput: Record<keyof CustomActorInput, Field> = {
     editor: 'select',
     enum: CATEGORIES.map((c) => c.text),
     enumTitles: CATEGORIES.map((c) => capitalize(c.text)),
+    nullable: true,
+  }),
+  listingFilterMaxCount: createIntegerField({
+    title: 'Target number of results',
+    type: 'integer',
+    description: `If set, only up to this number of entries will be extracted.
+        The actual number of entries might be higher than this because
+        the results are paginated.`,
+    default: 100,
+    prefill: 100,
+    example: 100,
+    minimum: 1,
     nullable: true,
   }),
 };
