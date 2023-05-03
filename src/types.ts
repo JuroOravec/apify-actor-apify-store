@@ -1,11 +1,30 @@
-export type MaybePromise<T> = T | Promise<T>;
+import type { ArrVal } from './utils/types';
 
-/** Shape of the data passed to the actor from Apify */
-export interface ApifyStoreActorInput {
-  startUrls: string[];
-  query?: string;
-  category?: string;
-}
+export const ROUTE_LABELS = ['LISTING'] as const; // prettier-ignore
+export type RouteLabel = ArrVal<typeof ROUTE_LABELS>;
+
+export const CATEGORY = [
+  'ai',
+  'automation',
+  'business',
+  'covid-19',
+  'developer examples',
+  'developer tools',
+  'e-commerce',
+  'games',
+  'jobs',
+  'marketing',
+  'news',
+  'seo tools',
+  'social media',
+  'travel',
+  'videos',
+  'real estate',
+  'sports',
+  'education',
+  'other',
+];
+export type Category = ArrVal<typeof CATEGORY>;
 
 export interface CategoriesQueryRequestPayload {
   query: string;
