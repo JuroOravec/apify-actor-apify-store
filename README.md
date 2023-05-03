@@ -1,118 +1,115 @@
-Apify Store Scraper
+# Apify Store Scraper
+
 ===============================
 
-Apify Actor that scrapes Apify Store Actors.
+Apify actor scraper that scrapers Apify actors from the Apify Store
 
-## What is Apify Store Scraper and how does it work?
+For more info see:
 
-With Apify Store Scraper, you can extract data on all Actors on the [Apify's Store page](https://apify.com/store). Get detailed information about various actors, including their name, description, version, author, pricing model, cost, trial minutes, number of users, builds, and runs, and more.
+- <https://apify.com/jurooravec/apify-store-scraper>
+- <https://github.com/JuroOravec/apify-actor-utils>
+- <https://docs.apify.com/platform/actors/development>
 
-## Features
-- Scrape Apify Actor details from the [Apify Store](https://apify.com/store)
-- Filter the results based on categories or search terms
-- Download the dataset in JSON, JSONL, XML, CSV, Excel, or HTML formats
+## Checklist
 
-## How can you use scraped Apify Store data? (Use cases)
-- Analyze the Apify Actor ecosystem and identify popular actors
-- Monitor newly released actors and updates
-- Discover new actors for your web scraping needs
-- Conduct market research on web scraping and automation tools
+1. Dataset identification
 
-## How to use Apify Actor Scraper
-1. Create a free Apify account using your email
-2. Open Apify Actor Scraper
-3. Choose a category or a search term to narrow down the results (optional).
-4. Click "Start" and wait for the data to be extracted.
-5. Download your data in JSON, JSONL, XML, CSV, Excel, or HTML format.
+    - [ ] 1.1 Identify distinct types of web pages and the data of interest
+    - [ ] 1.2 Identify how to distinguish between the web pages, whether via URL, or page content
+    - [ ] 1.3 Define labels for these distinct types in `./router.ts`
+    - [ ] 1.4 Define default handler matchers based on these distinct types in `./router.ts`
+    - [ ] 1.5 Define these distinct types in `./router.ts`
+    - [ ] 1.6 Identify the fields / data of interest per each page.
+      - [ ] 1.6.1 Which fields are composite / will need post-processing? (e.g. more info packed up in single text)
+      - [ ] 1.6.2 Which fields are considered personally identifiable information (GDPR)?
+      - [ ] 1.6.3 For URLs, are they relative or absolute?
+    - [ ] 1.7 Check if there isn't additional data either in HTML or requests (usually Fetch/XHR)
 
-Available categories: AI, Automation, Business, Covid-19, Developer Examples, Developer Tools, E-commerce, Games, Jobs, Marketing, News, SEO Tools, Social media, Travel, Videos, Real estate, Sports, Education, Other.
+2. Entry extraction
 
-## How much does it cost to scrape Apify Store?
-This scraper is free, you pay only for usage!
+    - [ ] 2.1 Check if you need browser / JS to make the data load
+    - [ ] 2.2. Check if you need to click / trigger anything to make the data load
+    - [ ] 2.3 Check if you need cookie session to make the data load
+    - [ ] 2.4 Check if you need to be logged in to make the data load
+    - [ ] 2.5 Check if the page differs if you visit it via incognito
+    - [ ] 2.6 Check if entries have distinct URL
 
-Cost of full run (~ 1100 actors):
-- One-off run - $0.031
-- Every day - less than $1 per month ($0.961 = 31 * $0.031)
+3. Entry scheduling / Listing
 
-Remember that with the [Apify Free plan](https://apify.com/pricing) you have $5 free usage per month.
+    - [ ] 2.0 How do I find the listing page(s), is it single or more pages? (remember how paperindex was structured)
+    - [ ] 2.1 Check if you need browser / JS to make the listing load
+    - [ ] 2.2 Check if you need to click / trigger anything to make the listing load
+    - [ ] 2.3 Check if you need cookie session to make the listing load
+    - [ ] 2.4 Check if you need to be logged in to make the listing load
+    - [ ] 2.5 Check if the page differs if you visit it via incognito
+    - [ ] 2.6 How do I find the total results count?
+    - [ ] 2.7 Check if there's upper limit on the listing results
+      - [ ] 2.7.1 If so, what strategies are available to get over the limit?
+    - [ ] 2.8 What filters are available?
+      - [ ] 2.8.1 Are the filters set via query params, post body, interaction with server, or other?
+      - [ ] 2.8.2 Identify the available / permitted values for each of filters?
+    - [ ] 2.9 Is there option to set items per page and / or current page?
+      - [ ] 2.9.1 If available, to how high value can I set items per page? Does it impact load time?
+    - [ ] 2.10 How do I reset the filter? Do I need to interact with the server (like in SKSCRIS?)
+    - [ ] 2.11 Is there other data on the entries that's on the listing page, but not on entry page?
+    - [ ] 2.12 Is the data on listing page sufficient for a "simple" version of the dataset?
+    - [ ] 2.13 Are there non-entry elements in the list? (E.g. inline ads) How do I exclude them?
+    - [ ] 2.14 How do I know if there are no results on the page?
+      - [ ] 2.14.1 In such case, how do I know whether it's the end of the pagination?
+    - [ ] 2.15 How do I identify the next page URL or action to load next page?
+    - [ ] 2.16 How do if I'm on last page of pagination?
 
-## Is it legal to scrape Apify Store?
-It is legal to scrape publicly available data such as product descriptions, prices, or ratings. Read Apify's blog post on [the legality of web scraping](https://blog.apify.com/is-web-scraping-legal/) to learn more.
+4. Communicate the findings to client, agree on scope
 
+5. Implement step 1.
+6. Implement step 2.
+7. Implement step 3.
 
-## Input options
+8. Actor input options
+    - [ ] 8.1 Add input options to interface
+    - [ ] 8.2 Implement new actor inputs
+    - [ ] 8.3 Add the input options to actor config (`config.ts` or `actor.json`)
+    - [ ] 8.4 Update actor input validation in `validation.ts`
 
-You can run Apify Store Scraper as is, with the default options. This will give you the full list of all actors from all categories.
+9. Types & tests
+    - [ ] 9.1 Write basic tests (e.g. the ones using `dataset` input) and make them pass without validation
+    - [ ] 9.2 Print the results and define types for the entries
+      - [ ] 9.2.1 Don't forget to update the entry types in rest of the code too
+    - [ ] 9.3 Write entry validation for tests and update the tests to use it
+    - [ ] 9.4 Write tests for each of the dataset types
 
-You can also filter actors by category or search term ("query"). Hence you can use Apify Store Scraper to check for existence of actors for specific websites.
+10. Publish v0.1
+    - [ ] 10.1 Update the text/names in `actor.json` / `config.ts`
+    - [ ] 10.2 Update the text/names in `package.json`
+    - [ ] 10.3 Create new actor in Apify and give it a name
+    - [ ] 10.4 Set actor source to GitHub repo
+      - [ ] 10.4.1 Set source to SSH (git://) URI
+      - [ ] 10.4.2 Add Apify deploy key to GitHub repo
+      - [ ] 10.4.3 Set up GitHub build webhook - Copy the URL for API > Build actor, and set it to GitHub webhook
+      - [ ] 10.4.4 Trigger first build, and fix any build issues
+    - [ ] 10.5 Run actor and check results
 
-For details and examples for all input fields, please visit the [Input tab](https://apify.com/jurooravec/apify-store-scraper/input-schema).
+11. Publish v1.0
+    - [ ] 11.1 Check if all actor inputs are set up
+    - [ ] 11.2 Do a couple of runs, and see if any default options (e.g. for the crawler) don't need changing (like was in SKCRIS)
+      - [ ] 11.2.1 If needed, update the config
+    - [ ] 11.3 For each dataset type, do a couple of runs, and record the time and cost it takes to run a) some set of entries, e.g. 100 or 1000; b) full dataset
+      - [ ] 11.3.1 Update the tabular data in actor README.
+    - [ ] 11.4 Update README section how to use the dataset
+      - [ ] 11.4.1 Use ChatGPT to brainstorm and give you a list of 20+ suggestions (see results I got for SKCRIS)
+    - [ ] 11.5 Update README section features
+    - [ ] 11.6 Update README section inputs
+    - [ ] 11.7 Update README section outputs
+    - [ ] 11.8 Update README section privacy
+    - [ ] 11.9 Add a screenshot of the results page
+    - [ ] 11.10 Finally, publish the actor to store
 
-### Example 1: Get all actors from Apify Store
+12. Deliver the actor (or dataset) to client
 
-```json
-{
-  "startUrls": ["https://apify.com/store"],
-}
-```
+13. Monetize
+    - [ ] 12.1 Add/update the entry in spreadsheet, and get pricing suggestion based on the difficulty of implementation and value of the dataset.
+    - [ ] 12.2 After actor was published, request monetization via Intercom (monthly fee, 4 days trial, and price from 12.1)
+    - [ ] 12.3 Update the spreadsheet with final price
 
-### Example 2: Get E-commerce "Facebook" actors
-```json
-{
-  "startUrls": ["https://apify.com/store"],
-  "query": "facebook",
-  "category": "E-COMMERCE"
-}
-```
-
-## Output
-
-Once Apify Store Scraper is done, you can see the overview of results in the Output tab. Head over to the Storage tab to export the dataset as JSON, HTML, CSV, or Excel.
-
-![Apify Store Actor dataset overview](./public/imgs/apify-store-actor-dataset-overview.png)
-
-## Sample output from Apify Store Scraper
-
-```json
-{
-	"title": "Forever21 Scraper",
-	"name": "forever21-scraper",
-	"username": "epctex",
-	"stats": {
-		"totalBuilds": 57,
-		"totalRuns": 691,
-		"totalUsers": 43,
-		"totalUsers7Days": 2,
-		"totalUsers30Days": 2,
-		"totalUsers90Days": 2,
-		"lastRunStartedAt": "2023-04-13T03:45:09.418Z"
-	},
-	"description": "Extract any product data from Forever21 easily! Images, sizes, SKUs, quantities, colors, and many more values are ready for you. Search for any keyword, filter by your needs, or get category pages! Export your data by XML, JSON, CSV, Excel or HTML.",
-	"pictureUrl": "https://apify-image-uploads-prod.s3.amazonaws.com/vetQadT3W7gHG48Np/L3YCNegYjCtjj9LFh-unnamed.png",
-	"notice": "NONE",
-	"userPictureUrl": "https://images.apifyusercontent.com/zCiSEGPDUfomBFKNm9nnOm9A_o8Bkijm3NdNE6UWP8A/rs:fill:32:32/aHR0cHM6Ly9hcGlmeS1pbWFnZS11cGxvYWRzLXByb2QuczMuYW1hem9uYXdzLmNvbS8zcWhBY1MzWlJKSzRhN3VORy9oczZrNXo2akNNNkpHY3U0Qi1zcXVhcmUtYmxhY2sucG5n.png",
-	"userFullName": "epctex",
-	"currentPricingInfo": {
-		"pricingModel": "FLAT_PRICE_PER_MONTH",
-		"pricePerUnitUsd": 30,
-		"trialMinutes": 4320,
-		"createdAt": "2023-01-13T11:00:17.436Z",
-		"startedAt": "2023-01-13T11:00:17.436Z",
-		"apifyMarginPercentage": 0
-	},
-	"objectID": "vetQadT3W7gHG48Np",
-	"categories": [
-		"ECOMMERCE"
-	]
-}
-```
-
-## How to integrate Apify Store Scraper with other services, APIs or Actors
-You can connect Apify Store Scraper with many of the [integrations on the Apify platform](https://apify.com/integrations). You can integrate with Make, Zapier, Slack, Airbyte, GitHub, Google Sheets, Google Drive, [and more](https://docs.apify.com/integrations). Or you can use [webhooks](https://docs.apify.com/integrations/webhooks) to carry out an action whenever an event occurs, e.g. get a notification whenever Instagram API Scraper successfully finishes a run.
-
-## Use Apify Store Scraper with Apify API
-The Apify API gives you programmatic access to the Apify platform. The API is organized around RESTful HTTP endpoints that enable you to manage, schedule and run Apify actors. The API also lets you access any datasets, monitor actor performance, fetch results, create and update versions, and more.
-
-To access the API using Node.js, use the `apify-client` NPM package. To access the API using Python, use the `apify-client` PyPI package.
-
-Check out the [Apify API reference](https://docs.apify.com/api/v2) docs for full details or click on the [API tab](https://apify.com/jurooravec/apify-store-scraper/api) for code examples.
+14. Advertise
+    - [ ] 13.1 Set up campaign to promote the actor
