@@ -1,4 +1,4 @@
-import { capitalize } from 'lodash';
+import { capitalize, omit } from 'lodash';
 import {
   createActorConfig,
   createActorInputSchema,
@@ -38,7 +38,7 @@ export interface CustomActorInput {
 /** Shape of the data passed to the actor from Apify */
 export interface ActorInput
   // Include the common fields in input
-  extends CrawlerConfigActorInput,
+  extends Omit<CrawlerConfigActorInput, 'ignoreSslErrors'>,
     LoggingActorInput,
     ProxyActorInput,
     PrivacyActorInput,
@@ -98,7 +98,8 @@ const inputSchema = createActorInputSchema<ActorInputSchema<Record<keyof ActorIn
     // Include the common fields in input
     ...proxyInput,
     ...privacyInput,
-    ...crawlerInput,
+    // ignoreSslErrors is not supported in Playwright crawler
+    ...omit(crawlerInput, 'ignoreSslErrors'),
     ...loggingInput,
   },
   required: ['startUrls'],
