@@ -14,6 +14,7 @@ export const CATEGORY = [
   'games',
   'jobs',
   'marketing',
+  'lead generation',
   'news',
   'seo tools',
   'social media',
@@ -23,7 +24,7 @@ export const CATEGORY = [
   'sports',
   'education',
   'other',
-];
+] as const;
 export type Category = ArrVal<typeof CATEGORY>;
 
 export interface CategoriesQueryRequestPayload {

@@ -1,5 +1,7 @@
 import { keyBy } from 'lodash';
 
+import type { Category } from './types';
+
 /**
  * Mapping of categories as show in the web and the filter option for network request
  *
@@ -20,6 +22,7 @@ export const CATEGORIES = [
   { text: 'e-commerce', filter: 'ECOMMERCE' },
   { text: 'games', filter: 'GAMES' },
   { text: 'jobs', filter: 'JOBS' },
+  { text: 'lead generation', filter: 'LEAD_GENERATION' },
   { text: 'marketing', filter: 'MARKETING' },
   { text: 'news', filter: 'NEWS' },
   { text: 'seo tools', filter: 'SEO_TOOLS' },
@@ -30,6 +33,7 @@ export const CATEGORIES = [
   { text: 'sports', filter: 'SPORTS' },
   { text: 'education', filter: 'EDUCATION' },
   { text: 'other', filter: 'OTHER' },
-];
+] satisfies { text: Category; filter: string }[];
+
 export const CATEGORIES_BY_TEXT = keyBy(CATEGORIES, (c) => c.text);
 export const CATEGORIES_BY_FILTER = keyBy(CATEGORIES, (c) => c.filter);

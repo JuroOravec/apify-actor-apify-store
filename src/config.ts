@@ -62,7 +62,7 @@ const customActorInput: Record<keyof CustomActorInput, Field> = {
     type: 'string',
     title: 'Actor category',
     description: 'If given, only actors from this category will be retried',
-    example: 'facebook',
+    example: 'lead generation',
     editor: 'select',
     enum: CATEGORIES.map((c) => c.text),
     enumTitles: CATEGORIES.map((c) => capitalize(c.text)),
