@@ -1,26 +1,12 @@
-import { Actor } from 'apify';
-import {
-  PlaywrightCrawler,
-  PlaywrightCrawlerOptions,
-  PlaywrightCrawlingContext,
-  createPlaywrightRouter,
-} from 'crawlee';
-import {
-  createApifyActor,
-  createErrorHandler,
-  createHttpCrawlerOptions,
-  logLevelHandlerWrapper,
-  setupSentry,
-} from 'apify-actor-utils';
+import { PlaywrightCrawlerOptions } from 'crawlee';
+import { createAndRunApifyActor } from 'apify-actor-utils';
 
-import type { ActorInput } from './config';
-import type { RouteLabel } from './types';
 import { createHandlers, routes } from './router';
 import { validateInput } from './validation';
 import { getPackageJsonInfo } from './utils/package';
 
 /** Crawler options that **may** be overriden by user input */
-const defaultCrawlerOptions: PlaywrightCrawlerOptions = {
+const crawlerConfigDefaults: PlaywrightCrawlerOptions = {
   maxRequestsPerMinute: 120,
   requestHandlerTimeoutSecs: 60 * 3,
   headless: true,
@@ -32,45 +18,21 @@ const defaultCrawlerOptions: PlaywrightCrawlerOptions = {
   // sessionPoolOptions: {},
 };
 
-export const run = async (crawlerConfig?: PlaywrightCrawlerOptions): Promise<void> => {
+export const run = async (crawlerConfigOverrides?: PlaywrightCrawlerOptions): Promise<void> => {
   const pkgJson = getPackageJsonInfo(module, ['name']);
-  setupSentry({ sentryOptions: { serverName: pkgJson.name } });
 
-  // See docs:
-  // - https://docs.apify.com/sdk/js/
-  // - https://docs.apify.com/academy/deploying-your-code/inputs-outputs#accepting-input-with-the-apify-sdk
-  // - https://docs.apify.com/sdk/js/docs/upgrading/upgrading-to-v3#apify-sdk
-  await Actor.main(
-    async () => {
-      const actor = await createApifyActor<PlaywrightCrawlingContext, RouteLabel, ActorInput>({
-        validateInput,
-        router: createPlaywrightRouter(),
-        routes,
-        routeHandlers: ({ input }) => createHandlers(input!),
-        handlerWrappers: ({ input }) => [
-          logLevelHandlerWrapper<PlaywrightCrawlingContext<any>>(input?.logLevel ?? 'info'),
-        ],
-        createCrawler: ({ router, proxy, input }) => {
-          const options = createHttpCrawlerOptions<PlaywrightCrawlerOptions, ActorInput>({
-            input,
-            defaults: defaultCrawlerOptions,
-            overrides: {
-              requestHandler: router,
-              proxyConfiguration: proxy,
-              // Capture errors as a separate Apify/Actor dataset and pass errors to Sentry
-              failedRequestHandler: createErrorHandler({
-                reportingDatasetId: 'REPORTING',
-                sendToSentry: true,
-              }),
-              ...crawlerConfig,
-            },
-          });
-          return new PlaywrightCrawler(options);
-        },
-      });
-
-      await actor.crawler.run(actor.input?.startUrls);
+  await createAndRunApifyActor({
+    actorType: 'playwright',
+    actorName: pkgJson.name,
+    actorConfig: {
+      validateInput,
+      routes,
+      routeHandlers: ({ input }) => createHandlers(input!),
     },
-    { statusMessage: 'Crawling finished!' }
-  );
+    crawlerConfigDefaults,
+    crawlerConfigOverrides,
+    onActorReady: async (actor) => {
+      await actor.runActor(actor.input?.startUrls);
+    },
+  });
 };

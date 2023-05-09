@@ -1,5 +1,10 @@
 import type { PlaywrightCrawlingContext } from 'crawlee';
-import { RouteHandler, createPlaywrightRouteMatchers, pushData } from 'apify-actor-utils';
+import {
+  PushDataOptions,
+  RouteHandler,
+  createPlaywrightRouteMatchers,
+  pushData,
+} from 'apify-actor-utils';
 
 import { RouteLabel, ApifyActorStoreItem } from './types';
 import type { ActorInput } from './config';
@@ -18,8 +23,23 @@ export const routes = createPlaywrightRouteMatchers<PlaywrightCrawlingContext, R
 export const createHandlers = <Ctx extends PlaywrightCrawlingContext>(
   input: ActorInput
 ): Record<RouteLabel, RouteHandler<Ctx>> => {
-  const { listingFilterQuery, listingFilterCategory, listingFilterMaxCount, includePersonalData } =
-    input;
+  const {
+    listingFilterQuery,
+    listingFilterCategory,
+    listingFilterMaxCount,
+    includePersonalData,
+    outputPickFields,
+    outputDatasetIdOrName,
+    outputRenameFields,
+  } = input;
+
+  const pushDataOptions = {
+    includeMetadata: true,
+    showPrivate: includePersonalData,
+    pickKeys: outputPickFields,
+    datasetIdOrName: outputDatasetIdOrName,
+    remapKeys: outputRenameFields,
+  } satisfies Omit<PushDataOptions<any>, 'privacyMask'>;
 
   return {
     LISTING: async (ctx) => {
@@ -144,9 +164,8 @@ export const createHandlers = <Ctx extends PlaywrightCrawlingContext>(
       }
 
       await pushData(Object.values(allItemsById), ctx, {
-        includeMetadata: true,
+        ...pushDataOptions,
         privacyMask: {},
-        showPrivate: includePersonalData,
       });
 
       // Cleanup
