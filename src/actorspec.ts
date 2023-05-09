@@ -4,12 +4,15 @@ import type { ApifyScraperActorSpec } from 'apify-actor-utils';
 const filters = ['search query', 'category'];
 
 const datasetFeatures = {
+  limitResultsCount: true,
   usesBrowser: true,
   proxySupport: true,
   configurable: true,
   regularlyTested: true,
   privacyCompliance: true,
   errorMonitoring: true,
+  changeMonitoring: false,
+  downstreamAutomation: true,
 } satisfies DatasetFeatures;
 
 const actorId = 'apify-store-scraper';
@@ -62,8 +65,14 @@ const actorSpec = {
       size: 1140,
       isDefault: true,
       filters,
+      filterCompleteness: 'full',
       modes: [],
       features: datasetFeatures,
+      faultTolerance: {
+        dataLossScope: 'batch',
+        timeLostAvgSec: 2,
+        timeLostMaxSec: 20,
+      },
       perfTable: 'default',
       // prettier-ignore
       perfStats: [

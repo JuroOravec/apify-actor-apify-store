@@ -47,14 +47,23 @@
         "search query",
         "category"
       ],
+      "filterCompleteness": "full",
       "modes": [],
       "features": {
+        "limitResultsCount": true,
         "usesBrowser": true,
         "proxySupport": true,
         "configurable": true,
         "regularlyTested": true,
         "privacyCompliance": true,
-        "errorMonitoring": true
+        "errorMonitoring": true,
+        "changeMonitoring": false,
+        "downstreamAutomation": true
+      },
+      "faultTolerance": {
+        "dataLossScope": "batch",
+        "timeLostAvgSec": 2,
+        "timeLostMaxSec": 20
       },
       "perfTable": "default",
       "perfStats": [
