@@ -80,7 +80,6 @@ const customActorInput: Record<keyof CustomActorInput, Field> = {
     description: `If set, only up to this number of entries will be extracted.
         The actual number of entries might be higher than this because
         the results are paginated.`,
-    default: 100,
     prefill: 100,
     example: 100,
     minimum: 1,
